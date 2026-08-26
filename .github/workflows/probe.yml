@@ -1,0 +1,17 @@
+name: kzn-post-probe
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run probe
+        run: python3 scripts/probe.py
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kzn-results
+          path: artifacts/
+      - name: Print results
+        run: cat artifacts/results.json || true
