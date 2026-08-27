@@ -49,14 +49,14 @@ def http(method: str, url: str, data=None, headers=None, timeout=25):
 
 
 def gen_prng_keys(max_unique: int = 80000) -> list[str]:
-    """Dense historical PRNG: daily × hours × all mt_rand(0,3000) for 2023–2026 SAST/UTC."""
+    """Dense historical PRNG: daily ? hours ? all mt_rand(0,3000) for 2023-2026 SAST/UTC."""
     keys: set[str] = set()
     # denser near recent years / shop activity windows
     specs = []
     for year in (2023, 2024, 2025, 2026):
         start = datetime(year, 1, 1, tzinfo=timezone(timedelta(hours=2)))
         end = datetime(year, 12, 31, tzinfo=timezone(timedelta(hours=2)))
-        # every day for 2024–2026; every 3rd day for 2023
+        # every day for 2024?2026; every 3rd day for 2023
         step = 1 if year >= 2024 else 3
         d = start
         while d <= end:
@@ -177,9 +177,9 @@ def main():
         "confirmed": False,
     }
 
-    print("generating keys…", flush=True)
+    print("generating keys?", flush=True)
     keys = gen_prng_keys(90000)
-    # Cap remote probes for GHA runtime (~15–25 min at ~40 workers)
+    # Cap remote probes for GHA runtime (~15?25 min at ~40 workers)
     probe_n = min(len(keys), 45000)
     probe_list = keys[:probe_n]
     results["probe_n"] = probe_n
