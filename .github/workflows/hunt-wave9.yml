@@ -1,0 +1,36 @@
+name: hunt-wave9
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/hunt_wave9.py"
+      - ".github/workflows/hunt-wave9.yml"
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run hunt wave9
+        run: python3 scripts/hunt_wave9.py
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hunt-wave9
+          path: |
+            artifacts/
+            out/
+      - name: Summary
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in [Path('artifacts/hunt_wave9.json'), Path('out/hunt_wave9.json')]:
+            if p.exists():
+              d = json.loads(p.read_text())
+              print('confirmed', d.get('confirmed'))
+              print('leads', d.get('leads'))
+              break
+          PY
