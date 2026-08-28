@@ -1,0 +1,39 @@
+name: mwai-critical
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/mwai_critical.py"
+      - ".github/workflows/mwai-critical.yml"
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run MWAI/Jetpack Critical probe
+        run: python3 scripts/mwai_critical.py
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mwai-critical
+          path: |
+            artifacts/
+            out/
+      - name: Print results
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in [Path('artifacts/mwai_critical.json'), Path('out/mwai_critical.json')]:
+            if p.exists():
+              d=json.loads(p.read_text())
+              print('confirmed', d.get('confirmed_count'), d.get('confirmed'))
+              print('leads', d.get('leads_count'))
+              for t in (d.get('tests') or []):
+                if t.get('code') in (200, 201) or t.get('hit'):
+                  print('HIT', t.get('method'), t.get('path'), t.get('code'), (t.get('body') or '')[:150])
+              break
+          PY
