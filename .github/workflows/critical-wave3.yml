@@ -1,0 +1,45 @@
+name: critical-wave3
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/critical_wave3.py"
+      - ".github/workflows/critical-wave3.yml"
+jobs:
+  smash:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run critical wave3
+        run: python3 scripts/critical_wave3.py
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: critical-wave3
+          path: |
+            artifacts/
+            out/
+      - name: Print summary
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in [Path('artifacts/critical_wave3.json'), Path('out/critical_wave3.json')]:
+            if p.exists():
+              d=json.loads(p.read_text())
+              print('confirmed', d.get('confirmed_count'), d.get('confirmed'))
+              print('leads', d.get('leads_count'))
+              for L in (d.get('leads') or [])[:30]:
+                print('LEAD', L)
+              print('nonces', (d.get('vectors') or {}).get('nonce_extract'))
+              for vec in ['mcp','mwai_nonce','wishlist_add','jetpack','xmlrpc','trx','afrihost']:
+                items=(d.get('vectors') or {}).get(vec) or []
+                interesting=[x for x in items if str(x.get('code')) in ('200','201') or x.get('hit')]
+                print(f'=== {vec} interesting {len(interesting)}/{len(items)} ===')
+                for x in (interesting or items)[:8]:
+                  print(' ', x)
+              break
+          PY
