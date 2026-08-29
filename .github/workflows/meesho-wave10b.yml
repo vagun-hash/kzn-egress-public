@@ -1,0 +1,13 @@
+name: meesho-wave10b
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/meesho_wave10b_gha.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meesho-wave10b
+          path: artifacts/meesho_wave10b_gha.json
