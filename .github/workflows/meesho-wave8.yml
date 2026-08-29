@@ -1,0 +1,19 @@
+name: Meesho Wave 8
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/meesho_wave8_gha.py'
+      - '.github/workflows/meesho-wave8.yml'
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run meesho wave8
+        run: python3 scripts/meesho_wave8_gha.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meesho-wave8
+          path: artifacts/meesho_wave8_gha.json
