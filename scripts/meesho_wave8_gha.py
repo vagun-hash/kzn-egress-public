@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Meesho bounty hunt — clean egress probes (route diff only, no exploit payloads)."""
+# Meesho bounty hunt - clean egress probes (route diff only, no exploit payloads).
 import json
 import os
 import re
